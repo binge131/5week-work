@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인터랙티브 알파벳</title>
+    <style>
+        body {
+            margin: 0;
+            position: relative;
+            background-color: black; /* 배경 색상 변경 */
+            color: white; /* 글자 색상 기본 설정 */
+        }
+        #cursor {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        #rotate {
+            animation: rotate 2s infinite linear;
+        }
+        @keyframes rotate {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .letter {
+            position: absolute;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="cursor">
+        <div id="rotate">A</div>
+    </div>
+
+    <script>
+        const cursor = document.getElementById('cursor');
+        const rotate = document.getElementById('rotate');
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let currentLetter = 0;
+
+        // 다양한 폰트 패밀리 배열
+        const fonts = [
+            'Arial', 'Courier New', 'Georgia', 'Times New Roman', 
+            'Verdana', 'Comic Sans MS', 'Impact', 'Lucida Console'
+        ];
+
+        // 랜덤 색상을 생성하는 함수
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        // 0.2초마다 알파벳과 색상 변경 (5배 빠르게)
+        setInterval(() => {
+            currentLetter = (currentLetter + 1) % alphabet.length;
+            rotate.textContent = alphabet[currentLetter];
+
+            // 알파벳 색상과 폰트를 랜덤하게 변경
+            rotate.style.color = getRandomColor();
+            rotate.style.fontFamily = fonts[Math.floor(Math.random() * fonts.length)];
+        }, 200);
+
+        // 마우스 움직임에 따라 크기 변화 및 이동
+        window.onmousemove = function(e) {
+            cursor.style.left = e.clientX + "px";
+            cursor.style.top = e.clientY + "px";
+
+            // 크기를 마우스 움직임에 따라 더 다이나믹하게 변경 (최소 50px ~ 최대 300px)
+            const newSize = Math.abs(e.movementX + e.movementY) * 5 + 50;
+            rotate.style.fontSize = newSize + "px";
+        };
+
+        // 클릭 시 알파벳을 화면에 고정하고 크기와 색상도 함께 저장
+        window.onclick = function(e) {
+            const letterElement = document.createElement('div');
+            letterElement.textContent = alphabet[currentLetter];
+            letterElement.classList.add('letter');
+            letterElement.style.left = e.clientX + "px";
+            letterElement.style.top = e.clientY + "px";
+
+            // 클릭 시 크기를 4배 키우고 색상 유지
+            letterElement.style.fontSize = parseInt(rotate.style.fontSize) * 4 + "px";
+            letterElement.style.color = rotate.style.color;
+            letterElement.style.fontFamily = rotate.style.fontFamily; // 클릭 시 폰트 유지
+
+            document.body.appendChild(letterElement);
+        };
+    </script>
+</body>
+</html>
